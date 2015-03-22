@@ -58,7 +58,45 @@ public class Hand {
 		h.EvalHand();
 		
 		return h;
-	}	
+	}
+	
+	public void HandleJokerWilds() {
+		ArrayList<Hand> HandsWJokers = new ArrayList<Hand>();
+		HandsWJokers.add(this);
+		int SubCardNo = 0;
+		for (Card CardInHand: this.getCards()) {
+			HandsWJokers = ExplodeHands(HandsWJokers, SubCardNo);
+			SubCardNo++;
+		}
+	}
+		
+	private static ArrayList<Hand> ExplodeHands(ArrayList<Hand> hands, int SubCardNo) {
+		ArrayList<Hand> SubHands = new ArrayList<Hand>();
+			
+		for (Hand h: hands) {
+			ArrayList<Card> c = h.getCards();
+			ArrayList<Card> c2 = new ArrayList();
+			ArrayList<Hand> subbed = new ArrayList();
+			for (int i = 0; i < 13; i++) {
+				subbed = null;
+				for (int j = 0; j < 4; j++) {
+					if (c.get(SubCardNo).getRank().getRank() != eRank.JOKER.getRank()) {
+						c2.add(c.get(SubCardNo));
+					}
+					else {
+						eRank rank = eRank.values()[i];
+						eSuit suit = eSuit.values()[j];
+						Card subCard = new Card(suit, rank);
+						c2.add(subCard);
+						}
+					subbed.add(EvalHand(c2));
+					Collections.sort(subbed, Hand.HandRank);
+					}
+				}
+			SubHands.add(subbed.get(0));
+		}
+		return SubHands;
+	}
 	
 	public void EvalHand() {
 		// Evaluates if the hand is a flush and/or straight then figures out
